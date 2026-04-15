@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Turnaround" />
+  <meta name="theme-color" content="#f7f6f2" />
+  <title>turnaround-homescreen-app</title>
+  <style>
+    :root, [data-theme="light"] {
+      --bg:#f7f6f2; --surface:#fbfbf9; --surface-2:#f1efea; --border:#d6d1c8; --text:#27241d; --muted:#6c6961;
+      --primary:#01696f; --primary-soft:#d9ecec; --danger:#964219; --ok:#2f6f42;
+      --radius:18px; --radius-sm:12px; --shadow:0 1px 2px rgba(0,0,0,.06);
+    }
+    [data-theme="dark"] {
+      --bg:#171614; --surface:#1d1c1a; --surface-2:#24221f; --border:#3b3834; --text:#efede8; --muted:#aba59d;
+      --primary:#4f98a3; --primary-soft:#243437; --danger:#d28b66; --ok:#7fbe84;
+      --shadow:0 1px 2px rgba(0,0,0,.24);
+    }
+    *{box-sizing:border-box}
+    html{-webkit-text-size-adjust:none;text-size-adjust:none}
+    body{margin:0;background:var(--bg);color:var(--text);font:400 16px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif}
+    button,input,textarea{font:inherit}
+    button{cursor:pointer;border:none}
+    .app{max-width:780px;margin:0 auto;padding:calc(env(safe-area-inset-top) + 14px) 14px calc(env(safe-area-inset-bottom) + 102px)}
+    .topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:38px;height:38px;border-radius:12px;background:var(--primary-soft);display:grid;place-items:center;color:var(--primary);flex:0 0 auto}
+    .logo svg{width:22px;height:22px}
+    h1{margin:0;font-size:1.45rem;line-height:1.1}
+    .muted{font-size:.95rem;color:var(--muted)}
+    .theme-toggle{width:46px;height:46px;border-radius:14px;background:var(--surface);border:1px solid var(--border);color:var(--text)}
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:22px;padding:16px;box-shadow:var(--shadow);margin-bottom:16px}
+    .section-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
+    .section-head h2{margin:0;font-size:1.2rem}
+    .pill{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;background:var(--primary-soft);color:var(--primary);font-weight:700;font-size:.82rem}
+    .grid{display:grid;gap:12px}
+    .grid.two{grid-template-columns:1fr 1fr}
+    .grid.three{grid-template-columns:1fr 1fr 1fr}
+    label{display:block;font-size:.82rem;font-weight:700;color:var(--muted);margin-bottom:6px}
+    input,textarea{width:100%;min-height:48px;border:1px solid var(--border);border-radius:16px;background:var(--bg);color:var(--text);padding:14px}
+    textarea{min-height:96px;resize:vertical}
+    .rows{display:grid;gap:12px}
+    .row-range,.row-single{display:grid;gap:8px;align-items:end;border:1px solid var(--border);background:var(--surface-2);border-radius:18px;padding:12px}
+    .row-range{grid-template-columns:minmax(110px,1fr) 84px 48px 84px 48px}
+    .row-single{grid-template-columns:minmax(110px,1fr) 94px 58px}
+    .name{font-weight:700;font-size:.95rem}
+    .sub{font-size:.8rem;color:var(--muted);margin-top:2px}
+    .field-label{text-align:center;margin-bottom:4px}
+    .time-input{text-align:center;font-weight:700;letter-spacing:.03em;font-variant-numeric:tabular-nums;min-height:44px;padding:10px 8px}
+    .mini,.secondary,.copy,.danger{min-height:48px;border-radius:14px;font-weight:700}
+    .mini{min-height:44px;border-radius:12px;background:var(--primary);color:#fff}
+    .secondary{background:var(--primary-soft);color:var(--primary)}
+    .copy{background:var(--surface-2);color:var(--text)}
+    .danger{background:transparent;color:var(--danger);border:1px solid color-mix(in srgb, var(--danger) 30%, var(--border))}
+    .duration{display:inline-block;margin-top:6px;font-size:.8rem;color:var(--ok)}
+    .hint{font-size:.82rem;color:var(--muted);margin-top:10px}
+    .status{font-size:.82rem;color:var(--muted);min-height:1.1em;margin-top:8px}
+    .bottom{position:fixed;left:0;right:0;bottom:0;padding:12px 14px calc(env(safe-area-inset-bottom) + 12px);background:linear-gradient(to top,var(--bg) 72%, transparent)}
+    .bottom-inner{max-width:780px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .install{font-size:.82rem;color:var(--muted);background:var(--surface-2);padding:10px 12px;border-radius:14px;border:1px solid var(--border);margin-top:10px}
+    .noscript{margin-top:10px;padding:10px 12px;border-radius:14px;background:#fff4d8;color:#6b4c00;border:1px solid #e6c874}
+    @media (max-width:640px){.grid.two,.grid.three{grid-template-columns:1fr}.row-range{grid-template-columns:1fr 78px 44px 78px 44px}.row-single{grid-template-columns:1fr 88px 54px}}
+    @media (max-width:430px){.row-range{grid-template-columns:1fr 70px 42px 70px 42px;gap:6px;padding:10px}.row-single{grid-template-columns:1fr 80px 50px;gap:6px;padding:10px}.field-label{font-size:.74rem}.time-input{font-size:.92rem}}
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo" aria-label="TRC Logo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 17h8"/><path d="M8 13h8"/><path d="M12 9h8"/></svg>
+        </div>
+        <div>
+          <h1>Turnaround</h1>
+          <div class="muted">Homescreen-Version mit Zeitstempeln, Infofeldern und Dauern.</div>
+        </div>
+      </div>
+      <button class="theme-toggle" id="themeToggle" aria-label="Farbschema wechseln">◐</button>
+    </header>
+
+    <section class="card">
+      <div class="section-head">
+        <h2>Flugdaten</h2>
+        <span class="pill" id="liveClock">--:--</span>
+      </div>
+      <div class="grid two">
+        <div><label for="flight">Flug</label><input id="flight" placeholder="z. B. EW1234"></div>
+        <div><label for="date">Datum</label><input id="date" placeholder="15.04.2026"></div>
+        <div><label for="stand">Stand / Gate</label><input id="stand" placeholder="A12"></div>
+        <div><label for="reg">Reg.</label><input id="reg" placeholder="D-ABCD"></div>
+      </div>
+      <div class="install">Nach dem Öffnen in Safari: Teilen → Zum Home-Bildschirm.</div>
+      <noscript><div class="noscript">JavaScript ist aus. Die Auto-Zeitstempel und Berechnungen brauchen Safari/Web-App.</div></noscript>
+    </section>
+
+    <section class="card">
+      <div class="section-head">
+        <h2>Kernzeiten</h2>
+        <button class="secondary" id="fillNowAll" type="button">Leere Felder füllen</button>
+      </div>
+      <div class="rows">
+        <div class="row-range">
+          <div><div class="name">Deboarding</div><div class="sub">von bis</div><div class="duration" id="deboardingDuration"></div></div>
+          <div><label class="field-label" for="deboardingFrom">Von</label><input class="time-input" id="deboardingFrom" placeholder="--:--"></div>
+          <button class="mini" data-target="deboardingFrom" type="button">V</button>
+          <div><label class="field-label" for="deboardingTo">Bis</label><input class="time-input" id="deboardingTo" placeholder="--:--"></div>
+          <button class="mini" data-target="deboardingTo" type="button">B</button>
+        </div>
+        <div class="row-range">
+          <div><div class="name">Offloading</div><div class="sub">von bis</div><div class="duration" id="offloadingDuration"></div></div>
+          <div><label class="field-label" for="offloadingFrom">Von</label><input class="time-input" id="offloadingFrom" placeholder="--:--"></div>
+          <button class="mini" data-target="offloadingFrom" type="button">V</button>
+          <div><label class="field-label" for="offloadingTo">Bis</label><input class="time-input" id="offloadingTo" placeholder="--:--"></div>
+          <button class="mini" data-target="offloadingTo" type="button">B</button>
+        </div>
+        <div class="row-range">
+          <div><div class="name">Cleaning</div><div class="sub">von bis</div><div class="duration" id="cleaningDuration"></div></div>
+          <div><label class="field-label" for="cleaningFrom">Von</label><input class="time-input" id="cleaningFrom" placeholder="--:--"></div>
+          <button class="mini" data-target="cleaningFrom" type="button">V</button>
+          <div><label class="field-label" for="cleaningTo">Bis</label><input class="time-input" id="cleaningTo" placeholder="--:--"></div>
+          <button class="mini" data-target="cleaningTo" type="button">B</button>
+        </div>
+        <div class="row-range">
+          <div><div class="name">Onloading</div><div class="sub">von bis</div><div class="duration" id="onloadingDuration"></div></div>
+          <div><label class="field-label" for="onloadingFrom">Von</label><input class="time-input" id="onloadingFrom" placeholder="--:--"></div>
+          <button class="mini" data-target="onloadingFrom" type="button">V</button>
+          <div><label class="field-label" for="onloadingTo">Bis</label><input class="time-input" id="onloadingTo" placeholder="--:--"></div>
+          <button class="mini" data-target="onloadingTo" type="button">B</button>
+        </div>
+        <div class="row-range">
+          <div><div class="name">Boarding</div><div class="sub">von bis</div><div class="duration" id="boardingDuration"></div></div>
+          <div><label class="field-label" for="boardingFrom">Von</label><input class="time-input" id="boardingFrom" placeholder="--:--"></div>
+          <button class="mini" data-target="boardingFrom" type="button">V</button>
+          <div><label class="field-label" for="boardingTo">Bis</label><input class="time-input" id="boardingTo" placeholder="--:--"></div>
+          <button class="mini" data-target="boardingTo" type="button">B</button>
+        </div>
+        <div class="row-single">
+          <div><div class="name">ATA</div><div class="sub">Einzelzeit</div></div>
+          <div><label class="field-label" for="ata">Zeit</label><input class="time-input" id="ata" placeholder="--:--"></div>
+          <button class="mini" data-target="ata" type="button">+</button>
+        </div>
+        <div class="row-single">
+          <div><div class="name">Doors closed</div><div class="sub">Einzelzeit</div></div>
+          <div><label class="field-label" for="doorsClosed">Zeit</label><input class="time-input" id="doorsClosed" placeholder="--:--"></div>
+          <button class="mini" data-target="doorsClosed" type="button">+</button>
+        </div>
+        <div class="row-single">
+          <div><div class="name">Pushback</div><div class="sub">Einzelzeit</div></div>
+          <div><label class="field-label" for="pushback">Zeit</label><input class="time-input" id="pushback" placeholder="--:--"></div>
+          <button class="mini" data-target="pushback" type="button">+</button>
+        </div>
+        <div class="row-single">
+          <div><div class="name">ATD</div><div class="sub">Einzelzeit</div><div class="duration" id="turnaroundDuration"></div></div>
+          <div><label class="field-label" for="atd">Zeit</label><input class="time-input" id="atd" placeholder="--:--"></div>
+          <button class="mini" data-target="atd" type="button">+</button>
+        </div>
+      </div>
+      <div class="hint">Beispiel: Deboarding von 22:12 bis 22:20.</div>
+      <div class="status" id="status"></div>
+    </section>
+
+    <section class="card">
+      <div class="section-head"><h2>Operation / Info</h2></div>
+      <div class="grid three">
+        <div><label for="blockfuel">Blockfuel</label><input id="blockfuel" placeholder="z. B. 5.2"></div>
+        <div><label for="ctot">CTOT</label><input id="ctot" placeholder="z. B. 22:35"></div>
+        <div><label for="inboundPax">Inbound Pax</label><input id="inboundPax" placeholder="z. B. 168"></div>
+      </div>
+      <div class="grid two" style="margin-top:12px">
+        <div><label for="pax">Outbound / Final Pax</label><input id="pax" placeholder="z. B. 164"></div>
+        <div><label for="bags">Bags</label><input id="bags" placeholder="z. B. 132"></div>
+      </div>
+      <div style="margin-top:12px"><label for="generalSpecials">Besonderheiten allgemein</label><textarea id="generalSpecials" placeholder="z. B. Delay, Tech, PRM, Sonderladung"></textarea></div>
+      <div style="margin-top:12px"><label for="inboundSpecials">Inbound Besonderheiten</label><textarea id="inboundSpecials" placeholder="z. B. Transferpaxe, UM, Wheelchair, Rush Bags"></textarea></div>
+      <div style="margin-top:12px"><label for="notes">Zusätzliche Notizen</label><textarea id="notes" placeholder="Freie Notizen"></textarea></div>
+    </section>
+  </main>
+
+  <div class="bottom">
+    <div class="bottom-inner">
+      <button class="copy" id="copySummary" type="button">Als Notiz kopieren</button>
+      <button class="danger" id="clearAll" type="button">Alles leeren</button>
+    </div>
+  </div>
+
+  <script>
+    const idsForFill = ['ata','doorsClosed','pushback','atd','deboardingFrom','deboardingTo','offloadingFrom','offloadingTo','cleaningFrom','cleaningTo','onloadingFrom','onloadingTo','boardingFrom','boardingTo'];
+    function nowTime(){return new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})}
+    function flashStatus(text){const el=document.getElementById('status');el.textContent=text;clearTimeout(window._t);window._t=setTimeout(()=>el.textContent='',1800)}
+    function parseTime(v){if(!/^\d{2}:\d{2}$/.test(v)) return null; const [h,m]=v.split(':').map(Number); if(h>23||m>59) return null; return h*60+m;}
+    function diffText(a,b){const x=parseTime(a), y=parseTime(b); if(x===null||y===null) return ''; let d=y-x; if(d<0) d+=24*60; return d+' min';}
+    function updateDuration(fromId,toId,outId,label){const txt=diffText(document.getElementById(fromId).value.trim(),document.getElementById(toId).value.trim()); document.getElementById(outId).textContent = txt ? 'Dauer: '+txt : ''; if(txt && label) {} }
+    function updateAllDurations(){
+      updateDuration('deboardingFrom','deboardingTo','deboardingDuration');
+      updateDuration('offloadingFrom','offloadingTo','offloadingDuration');
+      updateDuration('cleaningFrom','cleaningTo','cleaningDuration');
+      updateDuration('onloadingFrom','onloadingTo','onloadingDuration');
+      updateDuration('boardingFrom','boardingTo','boardingDuration');
+      const turn = diffText(document.getElementById('ata').value.trim(), document.getElementById('atd').value.trim());
+      document.getElementById('turnaroundDuration').textContent = turn ? 'Turnaround: '+turn : '';
+    }
+    document.querySelectorAll('.mini').forEach(btn=>btn.addEventListener('click',()=>{const id=btn.dataset.target; const input=document.getElementById(id); input.value=nowTime(); updateAllDurations(); flashStatus(id+' gesetzt');}));
+    document.querySelectorAll('.time-input').forEach(input=>input.addEventListener('input',updateAllDurations));
+    document.getElementById('fillNowAll').addEventListener('click',()=>{const t=nowTime(); let c=0; idsForFill.forEach(id=>{const el=document.getElementById(id); if(!el.value.trim()){el.value=t;c++;}}); updateAllDurations(); flashStatus(c?c+' Felder gefüllt':'Keine leeren Felder');});
+    document.getElementById('clearAll').addEventListener('click',()=>{document.querySelectorAll('input,textarea').forEach(el=>el.value=''); updateAllDurations(); flashStatus('Alles geleert');});
+    document.getElementById('copySummary').addEventListener('click',async()=>{
+      const g=id=>document.getElementById(id)?.value.trim()||'';
+      const lines=[
+        'TURNAROUND NOTE','',`Flug: ${g('flight')}`,`Datum: ${g('date')}`,`Stand: ${g('stand')}`,`Reg: ${g('reg')}`,'',
+        'ZEITEN',
+        `Deboarding: ${g('deboardingFrom')} bis ${g('deboardingTo')}`,
+        `Offloading: ${g('offloadingFrom')} bis ${g('offloadingTo')}`,
+        `Cleaning: ${g('cleaningFrom')} bis ${g('cleaningTo')}`,
+        `Onloading: ${g('onloadingFrom')} bis ${g('onloadingTo')}`,
+        `Boarding: ${g('boardingFrom')} bis ${g('boardingTo')}`,
+        `ATA: ${g('ata')}`,
+        `Doors closed: ${g('doorsClosed')}`,
+        `Pushback: ${g('pushback')}`,
+        `ATD: ${g('atd')}`,
+        '', 'INFO',
+        `Blockfuel: ${g('blockfuel')}`,
+        `CTOT: ${g('ctot')}`,
+        `Inbound Pax: ${g('inboundPax')}`,
+        `Outbound / Final Pax: ${g('pax')}`,
+        `Bags: ${g('bags')}`,
+        `Besonderheiten allgemein: ${g('generalSpecials')}`,
+        `Inbound Besonderheiten: ${g('inboundSpecials')}`,
+        '', 'Notizen:', g('notes')
+      ];
+      try{await navigator.clipboard.writeText(lines.join('\n')); flashStatus('Notiz kopiert');}catch{flashStatus('Kopieren nicht möglich');}
+    });
+    const root=document.documentElement; let theme=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'; root.setAttribute('data-theme',theme);
+    document.getElementById('themeToggle').addEventListener('click',()=>{theme=theme==='dark'?'light':'dark'; root.setAttribute('data-theme',theme)});
+    function clock(){document.getElementById('liveClock').textContent=nowTime()} clock(); setInterval(clock,1000); updateAllDurations();
+  </script>
+</body>
+</html>
